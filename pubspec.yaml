@@ -1,0 +1,5 @@
+name: AdventOfCode
+version: 0.0.1
+description: A simple console application.
+dependencies:
+  crypto: '>=0.9.1 <1.0.0'
