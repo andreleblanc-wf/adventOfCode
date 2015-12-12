@@ -1,3 +1,12 @@
+"""
+The classic travelling salesman.  distances are only given in one direction,
+but it is assumed you can go in either direction.
+
+Since there are only 8 destinations, the brute force solution is the easiest way
+and the builtin itertools.permutations takes all the work out of it.
+all that's left is summing up the distances and finding the best (and worst for part 2)
+
+"""
 from collections import defaultdict
 
 import itertools

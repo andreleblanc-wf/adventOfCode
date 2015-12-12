@@ -2,12 +2,25 @@ import re
 import string
 import time
 
+'''
+Given an initial password, 'increment' it until it 'is_valid'
 
+'''
+
+# builds a list of ['abc', 'bcd', 'cde', ...etc...]
 valid_triplets = ["%s%s%s" % (c, chr(ord(c)+1), chr(ord(c)+2)) for c in string.lowercase[:-2]]
+
+#matches 2 double letters. (eg. "aaxyzbbcde")
 pair_re = re.compile(r'(\w)\1.*(\w)\2')
 
 
 def increment(pw):
+    '''
+    incrementing a string is increasing the last letter (eg. a->b, b->c, etc)
+    unless it's z, in which case, it becomes a, and you increment the rest
+    of the string recursively.
+
+    '''
     last = pw[-1]
     if last == 'z':
         return increment(pw[:-1]) + 'a'

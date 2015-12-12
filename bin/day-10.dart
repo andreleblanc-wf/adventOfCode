@@ -1,16 +1,12 @@
+/**
+ * 2 different approaches here.  The compact regex-replace in lookSay()
+ * and the more verbose, but faster version lookSay2.
+ *
+ */
+
 main() {
   RegExp re = new RegExp(r'(\w)\1*');
-  String s = '1113122113';
-  int ITERS = 3;
 
-  String runSolution(Function f) {
-    String _s = '1113122113';
-
-    for (int i=0; i<50; i++) {
-      _s = f(_s);
-    }
-    return _s;
-  }
 
   String lookSay(String inp) {
     return re.allMatches(inp).map((m) => "${m
@@ -35,24 +31,26 @@ main() {
     return result.join('');
   }
 
-  int timeSolution(Function sol) {
 
+  String runSolution(Function f) {
+    String _s = '1113122113';
+
+    for (int i=0; i<50; i++) {
+      _s = f(_s);
+    }
+    return _s;
+  }
+
+  int timeSolution(Function sol) {
     Stopwatch watch = new Stopwatch()..start();
-    runSolution(sol);
+    print("Answer: ${runSolution(sol).length}");
     watch.stop();
     return watch.elapsedMilliseconds;
   }
 
-  int averageTime(Function sol) {
-    List<int> times = [];
-    for (int i=0; i<ITERS; i++) {
-      times.add(timeSolution(sol));
-    }
-    return (times.reduce((a,b) => a+b)/ITERS).floor();
-  }
+  assert (lookSay(lookSay(lookSay('1211'))) == '13112221');
+  assert (lookSay2(lookSay2(lookSay2('1211'))) == '13112221');
 
-  assert (lookSay(lookSay(lookSay(s))) == lookSay2(lookSay2(lookSay2(s))));
-  print(averageTime(lookSay));
-  print(averageTime(lookSay2));
-  //print("Time: ${watch.elapsedMilliseconds}");
+  print(timeSolution(lookSay));
+  print(timeSolution(lookSay2));
 }
