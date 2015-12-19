@@ -38,7 +38,7 @@ List<List<int>> createGrid(int x, int y) {
 
 main() {
 
-  List<String> instructions = new File("../inputs/day-6.txt").readAsLinesSync();
+  List<String> instructions = new File("./inputs/day-6.txt").readAsLinesSync();
 
   Map<String, Function> part1 = {
     'turn on': (value) => 1,

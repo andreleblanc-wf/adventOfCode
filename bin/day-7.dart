@@ -1,148 +1,57 @@
+/**
+ * This is a mostly direct port of the python version. its still about 5x slower
+ * and I'm not entirely sure why.
+ */
+
 import 'dart:io';
 
-RegExp parser = new RegExp(r'^([\w\d\s]+) -> (\w+)$', caseSensitive: false);
-RegExp simpleInput = new RegExp(r'^([\w\d]+)$', caseSensitive: false);
-RegExp unaryInput = new RegExp(r'^(\w+) ([\w\d]+)$', caseSensitive: false);
-RegExp binaryInput = new RegExp(r'^([\w\d]+) (\w+) ([\w\d]+)$', caseSensitive: false);
-
-
 Map<String, Function> ops = {
-  'NOT': (List<int> inp) => ~inp[0],
-  'AND': (List<int> inp) => inp[0] & inp[1],
-  'OR': (List<int> inp) => inp[0] | inp[1],
-  'RSHIFT': (List<int> inp) => inp[0] >> inp[1],
-  'LSHIFT': (List<int> inp) => inp[0] << inp[1],
+  'NOT': (int v) => ~v,
+  'AND': (int a, int b) => a & b,
+  'OR': (int a, int b) => a | b,
+  'RSHIFT': (int a, int b) => a >> b,
+  'LSHIFT': (int a, int b) => a << b
 };
 
 
-bool log = false;
-
-class Graph {
-  Map<String, int> wires = new Map<String, int>();
-  List<Gate> gates = new List<Gate>();
-
-  void addGate(String operator, List inputs, String output) {
-    Gate gate = new Gate();
-    gate.graph = this;
-    gate.output = output;
-    gate.inputs = new List.from(inputs);
-    gate.operator = operator;
-
-    for (var i in inputs) {
-      if (i.runtimeType == String) {
-        if (!wires.containsKey(i)) {
-          wires[i] =  null;
-        }
-      }
-    }
-
-    if (!wires.containsKey(output)) {
-      wires[output] = null;
-    }
-
-    gates.add(gate);
-    resolveFrom(gate);
-  }
-
-  void resolveFrom(Gate gate) {
-    if (gate.hasAllInputs()) {
-      if (log) print("resolving from $gate");
-      wires[gate.output] = gate.getValue();
-      for (Gate affected in gates.where((Gate g) => g.inputs.contains(gate.output))) {
-        resolveFrom(affected);
-      }
-    }
-  }
-}
-
-class Gate {
-
-  Graph graph;
-  List inputs = [];
-  String output = null;
-  String operator;
-
-  @override
-  String toString() {
-    return "$operator(${inputs.join(',')}) -> $output";
-  }
-
-  bool hasAllInputs() {
-    for (var i in inputs) {
-      if (i.runtimeType == String) {
-        if (graph.wires[i] == null) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  int _getInputValue(var input) {
-    if (input.runtimeType == String) {
-      return graph.wires[input];
-    } else if (input.runtimeType == int) {
-      return input;
-    } else {
-      throw new TypeError();
-    }
-  }
-  int getValue() {
-    if (operator == null) {
-      return _getInputValue(inputs[0]);
-    } else {
-      return ops[operator](inputs.map(_getInputValue).toList());
-    }
-  }
-}
-
-dynamic tryParse(String input) {
-  try {
-    return int.parse(input);
-  } on Exception {
-    return input;
-  }
-}
-
 main() {
-  Graph graph = new Graph();
-  Match m;
-  String lhs, rhs;
-  List inputs;
-  Gate gate;
-  List<String> lines = new File("../inputs/day-7.txt").readAsLinesSync();
+  Map<String, dynamic> wires = {};
+  List<String> lines = new File("./inputs/day-7.txt").readAsLinesSync();
   Stopwatch watch = new Stopwatch();
-  watch.start();
-  for (String line in lines) {
-    m = parser.matchAsPrefix(line);
-    lhs = m.group(1);
-    rhs = m.group(2);
-    inputs = [];
-    // Handle a simple numeric input;
-    m = simpleInput.firstMatch(lhs);
-    if (m != null) {
-      inputs.add(tryParse(m.group(1)));
-      graph.addGate(null, inputs, rhs);
-      continue;
-    }
-    // handle a unary operator
-    m = unaryInput.firstMatch(lhs);
-    if (m != null) {
-      inputs.add(tryParse(m.group(2)));
-      graph.addGate(m.group(1), inputs, rhs);
-      continue;
-    }
 
-    // handle a binary operator
-    m = binaryInput.firstMatch(lhs);
-    if (m != null) {
-      inputs.add(tryParse(m.group(1)));
-      inputs.add(tryParse(m.group(3)));
-      graph.addGate(m.group(2), inputs, rhs);
-      continue;
+
+  for (String line in lines) {
+    List<String> parts = line.split(" -> ");
+    wires[parts[1]] = parts[0];
+  }
+  watch.start();
+  int evaluate(key) {
+    if (key is num) {
+      return key;
+    } else if (int.parse(key, onError: (e) => null) != null) {
+      return int.parse(key);
+    } else {
+      var val = wires[key];
+      if (val is num) {
+        return val;
+      } else if (int.parse(val, onError: (e) => null) != null) {
+        wires[key] = int.parse(val);
+      } else if (wires.containsKey(val)) {
+        wires[key] = evaluate(val);
+      } else {
+        List<String> parts = val.split(' ');
+        if (parts.length == 3) {
+          // binary
+          wires[key] = ops[parts[1]](evaluate(parts[0]), evaluate(parts[2]));
+        } else if (parts.length == 2) {
+          wires[key] = ops[parts[0]](evaluate(parts[1]));
+        }
+      }
+      return wires[key];
     }
   }
-  int answer = graph.wires['a'];
+
+  int answer = evaluate('a');
   watch.stop();
   print("a = $answer (${watch.elapsedMilliseconds}ms)");
 

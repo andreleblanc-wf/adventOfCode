@@ -56,7 +56,8 @@ main(List<String> args) {
   int niceCount = 0;
   int actuallyNiceCount = 0;
 
-  List<String> words = new File("../inputs/day-5.txt").readAsLinesSync();
+  List<String> words = new File("./inputs/day-5.txt").readAsLinesSync();
+  Stopwatch watch = new Stopwatch()..start();
   for (String word in words) {
     if (isNice(word)) {
       niceCount ++;
@@ -67,4 +68,6 @@ main(List<String> args) {
   }
   print("$niceCount nice words");
   print("$actuallyNiceCount ACTUALLY nice words");
+  watch.stop();
+  print(watch.elapsedMilliseconds);
 }

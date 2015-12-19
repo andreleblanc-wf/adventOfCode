@@ -1,7 +1,5 @@
 import time
 
-wires = {}
-
 ops = {
     'OR': lambda a, b: a | b,
     'AND': lambda a, b: a & b,
@@ -10,9 +8,6 @@ ops = {
     'LSHIFT': lambda a, b: a << b
 }
 
-for line in open("../inputs/day-7.txt"):
-    l, r = line.split(" -> ")
-    wires[r.strip()] = l
 
 def evaluate(wire):
 
@@ -49,7 +44,14 @@ def evaluate(wire):
 
     return wires[wire]
 
-now = time.time()
-print evaluate('a')
+wires = {}
 
-print (time.time() - now), 'seconds'
+now = time.time()
+
+for line in open("../inputs/day-7.txt"):
+    l, r = line.split(" -> ")
+    wires[r.strip()] = l
+
+print evaluate('a'),
+
+print 'in', int((time.time() - now) * 1000000), 'microseconds'

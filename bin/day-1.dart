@@ -2,9 +2,9 @@ import "dart:io";
 
 main(List<String> args) {
 
-  String data = new File("../inputs/day-1.txt").readAsStringSync();
+  String data = new File("./inputs/day-1.txt").readAsStringSync();
   int floor = 0;
-
+  Stopwatch watch = new Stopwatch()..start();
   for (int i=0; i<data.length;i++) {
 
     switch(data[i]) {
@@ -18,6 +18,7 @@ main(List<String> args) {
     }
   }
 
-  print (floor);
-
+  //print (floor);
+  watch.stop();
+  print(watch.elapsedMilliseconds);
 }

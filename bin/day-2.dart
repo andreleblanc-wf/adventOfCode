@@ -2,7 +2,7 @@ import "dart:io";
 import "dart:math";
 
 main(List<String> args) {
-  List<String> lines = new File("../inputs/day-2.txt").readAsLinesSync();
+  List<String> lines = new File("./inputs/day-2.txt").readAsLinesSync();
   int totalArea = 0;
   int a = 0;
   int b = 0;
@@ -10,6 +10,7 @@ main(List<String> args) {
   int smallestSide = 0;
   int vol = 0;
   int totalRibbon = 0;
+  Stopwatch watch = new Stopwatch()..start();
   for (String line in lines) {
 
     List<int> dims = line.split("x").map((s) => int.parse(s)).toList();
@@ -29,4 +30,6 @@ main(List<String> args) {
   }
   print(totalArea);
   print(totalRibbon);
+  watch.stop();
+  print(watch.elapsedMilliseconds);
 }

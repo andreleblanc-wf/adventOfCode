@@ -3,7 +3,7 @@ import "dart:io";
 main(List<String> args) {
   Stopwatch stopwatch = new Stopwatch()..start();
 
-  String data = new File("../inputs/day-3.txt").readAsStringSync();
+  String data = new File("./inputs/day-3.txt").readAsStringSync();
 
   Set<int> visited = new Set<int>();
 
