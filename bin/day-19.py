@@ -18,7 +18,7 @@ def part1():
     molecules = set()
     for src, repl in replacements:
         idx = 0
-        while True:
+        while src in medicine:
             idx = medicine.find(src, idx+1)
             if idx == -1:
                 break
@@ -33,8 +33,9 @@ def part2():
         for src, repl in replacements:
             if repl in med:
                 med = med.replace(repl, src, 1)
-                count +=1
+                count += 1
     return count
+
 
 if __name__ == '__main__':
     now = time.time()
